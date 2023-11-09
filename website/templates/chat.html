@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Survey Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <style>
+        @font-face {
+            font-family: 'Josefin Sans';
+            src: url('/fonts/JosefinSans-VariableFont_wght.ttf') format('truetype');
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            /* background-color: #F5F5DC; */
+            background-color: #53B9B9;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #F5F5DC;
+            text-align: center;
+        }
+
+        .text-container {
+            padding-top: 150pt;
+            padding-bottom: 150pt;
+            text-align: center;
+        }
+
+        .chatbox {
+            position: relative;
+            /* Add margin-top to create a gap */
+            background-color: #f5f5f5a0;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            min-height: 60vh;
+            max-height: 80vh;
+            margin: auto auto;
+            max-width: 900px;
+            overflow: hidden;
+            width: 90%;
+        }
+
+        .chat-input {
+            display: flex;
+            flex-direction: row;
+            margin: 10px;
+        }
+
+        .chat-input input[type="text"] {
+            background-color: #ffffffa0;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            font-size: 16px;
+            margin-right: 10px;
+            padding: 10px;
+        }
+
+        .chat-input button {
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+        }
+
+        .chat-output {
+            background-color: #ffffffa0;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            margin: 10px;
+            overflow-y: scroll;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .user-message {
+            padding: 2px;
+            border-radius: 10px;
+            background-color: #AED58140;
+            color: #000;
+            font-family: "Josefin Sans";
+        }
+
+        .chatbot-message {
+            margin-bottom: 1px;
+            padding: 2px;
+            border-radius: 10px;
+            background-color: #53B9B440;
+            color: #000;
+            font-family: "Josefin Sans";
+        }
+
+        .explain-box {
+            flex-direction: column;
+            background-color: #ffffffa0;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            overflow-y: scroll;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            font-size: 12px;
+            font-family: "Josefin Sans";
+            max-width: 900px;
+            overflow: hidden;
+            width: 90%;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .home-button svg {
+            fill: #fff;
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .container {
+                background-size: 90%;
+            }
+        }
+
+        @media (min-width: 1001px) {
+            .container {
+                background-size: 40%;
+            }
+        }
+
+        .chat-input button {
+        background-color: #53B9B4e0;
+        }
+
+        .home-button {
+        background-color: #53B9B9;
+        }
+
+        .home-button:hover {
+        background-color: #3d8f8f;
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <a href="/" class="home-button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M12 2L1 11h3v9h6v-6h4v6h6v-9h3L12 2zm0 5.5L17.5 11H14v4h-4v-4H6.5L12 7.5z" />
+        </svg>
+    </a>
+    <div class="container">
+
+        <div class="chatbox">
+            <div class="chat-input">
+                <input type="text" placeholder="Type your message here...">
+                <button>Send</button>
+            </div>
+            <div class="chat-output"></div>
+        </div>
+        <div class="explain-box">
+        <p style="margin:0">Powered by GPT-3.5.<br> Neither us nor OpenAI store the chat history. <br>The response is generate with the most recent up to 20 rounds of conversation on the page.
+        </div>
+
+    </div>
+</body>
+
+<script>
+    const chatButton = document.querySelector('.chat-input button');
+    const chatInput = document.querySelector(".chat-input input[type='text']");
+    const chatOutput = document.querySelector(".chat-output");
+
+    // Function to add a message to the chat output area
+    function addMessage(sender, message) {
+        // replace line breaks with <br> to preserve formatting
+        message = message.replace(/\n/g, "<br>");
+        var messageElement = document.createElement("div");
+        messageElement.innerHTML = "<strong>" + sender + ":</strong> " + message;
+        // Function to add a message to the chat output area
+        if (sender === "You") {
+            messageElement.classList.add("user-message");
+        } else {
+            messageElement.classList.add("chatbot-message");
+        }
+        chatOutput.insertBefore(messageElement, chatOutput.firstChild);
+    }
+
+        const welcomeMessage = `Ask me anything about the survey! `;
+        const chatbotRoute = "/chatbot-history";
+        addMessage("Survey Bot", welcomeMessage);
+
+    function formatChatHistory(maxHistory=40) {
+        var chatHistory = [];
+        var chatElements = chatOutput.children;
+
+        var numMsg = Math.min(maxHistory, chatElements.length - 1);
+
+        for (var i = numMsg - 1; i >= 0; i--) {
+            var element = chatElements[i];
+
+            var content = element.innerHTML.replace(/<strong>.*?:<\/strong>\s*/, "");
+            content = content.replace(/<br>/g, "\n");
+
+            if (element.classList.contains("user-message")) {
+                chatHistory.push({"role": "user", "content": content});
+            }
+            else if (element.classList.contains("chatbot-message")) {
+                chatHistory.push({"role": "assistant", "content": content});
+            }
+        }
+        return chatHistory;
+    }
+
+    // Function to send a message to the server
+    function getResponse(chatHistory) {
+        const msgJson = JSON.stringify(chatHistory);
+        return fetch(chatbotRoute, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: msgJson 
+        })
+            .then(response => response.text())
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // Function to send a message to the server
+    function processInput() {
+        addMessage("You", chatInput.value);
+        const chatHistory = formatChatHistory(5);
+        // const response = getResponse(chatInput.value);
+        const response = getResponse(chatHistory)
+        chatInput.value = '';
+        response.then((data) => {
+            addMessage("Survey Bot", data);
+            const hr = document.createElement("hr");
+            hr.style.margin = "2px";
+            chatOutput.insertBefore(hr, chatOutput.firstChild);
+        });
+    }
+
+    chatButton.addEventListener('click', () => {
+        if (chatInput.value !== '') {
+            processInput();
+        }
+    });
+
+    // enter key
+    chatInput.addEventListener('keyup', (event) => {
+        if (event.keyCode === 13 && chatInput.value !== '') {
+            processInput();
+        }
+    });
+</script>
+
+
+</html>

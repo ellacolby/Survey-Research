@@ -1,0 +1,16 @@
+This is a survey about computational usage of researchers.
+We conducted 130+ interviews with researchers from Princeton and Northwestern university.
+The following is the abstract to a paper that we are writing about the survey.
+
+Computing has grown increasingly vital across diverse research disciplines,
+necessitating the accommodation of researchers' varied requirements. However,
+the lack of quantitative knowledge on how researchers interact with
+computational resources makes it challenging to deliver appropriate support.
+Prompted by a survey carried out twelve years ago, which explored the practice
+of computational science within a doctoral-granting research institution, this
+study revisits key questions from the prior research and expands to unexplored
+areas.  By conducting comprehensive interviews with over 138 researchers at both
+the original institution and another distinct one and comparing findings against
+results from the prior survey, this study reveals the evolution of computational
+practices, identifies emerging trends, and underscores potential areas for
+future advancements.
