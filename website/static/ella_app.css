@@ -1,3 +1,7 @@
 .highlight {
     background-color: yellow;
 }
+.dataTables_wrapper {
+    width: 100%;
+    overflow: auto;
+}
