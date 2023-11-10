@@ -1,0 +1,157 @@
+@font-face {
+    font-family: 'josefin sans';
+    src: url('/fonts/josefinsans-variablefont_wght.ttf') format('truetype');
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    /* background-color: #f5f5dc; */
+    background-color: #53b9b9;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f5f5dc;
+    text-align: center;
+}
+
+.text-container {
+    padding-top: 150pt;
+    padding-bottom: 150pt;
+    text-align: center;
+}
+
+.chatbox {
+    position: relative;
+    /* add margin-top to create a gap */
+    background-color: #f5f5f5a0;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    min-height: 60vh;
+    max-height: 80vh;
+    margin: auto auto;
+    max-width: 900px;
+    overflow: hidden;
+    width: 90%;
+}
+
+.chat-input {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+}
+
+.chat-input input[type="text"] {
+    background-color: #ffffffa0;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    flex: 1;
+    font-size: 16px;
+    margin-right: 10px;
+    padding: 10px;
+}
+
+.chat-input button {
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+.chat-output {
+    background-color: #ffffffa0;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    flex: 1;
+    margin: 10px;
+    overflow-y: scroll;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.user-message {
+    padding: 2px;
+    border-radius: 10px;
+    background-color: #aed58140;
+    color: #000;
+    font-family: "josefin sans";
+}
+
+.chatbot-message {
+    margin-bottom: 1px;
+    padding: 2px;
+    border-radius: 10px;
+    background-color: #53b9b440;
+    color: #000;
+    font-family: "josefin sans";
+}
+
+.explain-box {
+    flex-direction: column;
+    background-color: #ffffffa0;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    overflow-y: scroll;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 12px;
+    font-family: "josefin sans";
+    max-width: 900px;
+    overflow: hidden;
+    width: 90%;
+}
+
+.home-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.home-button svg {
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+}
+
+@media (max-width: 1000px) {
+    .container {
+        background-size: 90%;
+    }
+}
+
+@media (min-width: 1001px) {
+    .container {
+        background-size: 40%;
+    }
+}
+
+.chat-input button {
+    background-color: #53b9b4e0;
+}
+
+.home-button {
+    background-color: #53b9b9;
+}
+
+.home-button:hover {
+    background-color: #3d8f8f;
+}

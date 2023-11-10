@@ -5,6 +5,7 @@
     <title>DataTables with Flask</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='app.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='chat.css') }}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <!-- Include D3.js for the tree diagram -->
@@ -12,6 +13,7 @@
     <!-- Your custom JavaScript file for drawing the tree diagram -->
     <script src="/static/tree_diagram.js"></script>
     <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script src="{{ url_for('static', filename='chat.js') }}"></script>
     <style>
         /* Simple reset for padding and margin */
         body, html {
@@ -90,6 +92,20 @@
         </div>
         <div class="half" id="tree-diagram">
             <!-- The tree diagram will be appended here by D3.js -->
+        <div class="container">
+
+            <div class="chatbox">
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message here...">
+                    <button>Send</button>
+                </div>
+                <div class="chat-output"></div>
+            </div>
+            <div class="explain-box">
+            <p style="margin:0">Powered by GPT-3.5.<br> Neither us nor OpenAI store the chat history. <br>The response is generate with the most recent up to 20 rounds of conversation on the page.
+            </div>
+
+        </div>
         </div>
     </div>
     <script>
