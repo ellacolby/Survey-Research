@@ -6,12 +6,58 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <!-- Include D3.js for the tree diagram -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <!-- Your custom JavaScript file for drawing the tree diagram -->
+    <script src="/static/tree_diagram.js"></script>
+    <script src="{{ url_for('static', filename='ella_app.js') }}"></script>
+    <style>
+        /* Simple reset for padding and margin */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        /* Use Flexbox to create a 2-column layout */
+        .split-screen {
+            display: flex;
+            height: 100%;
+        }
+        .half {
+            flex: 1;
+            overflow: auto; /* Add scroll to each half if content overflows */
+        }
+        /* Styles for the DataTable */
+        #myTable_wrapper {
+            padding: 20px; /* Adjust as needed */
+        }
+    </style>
+</head>
+<body>
+    <div class="split-screen">
+        <div class="half" id="table-container">
+            <table id="myTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Email Address</th>
+                        <th>department</th>
+                        <!-- <th>Column 3</th> -->
+                        <!-- Add more column headers as per your CSV file -->
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="half" id="tree-diagram">
+            <!-- The tree diagram will be appended here by D3.js -->
+        </div>
+    </div>
     <script>
+    // Your existing DataTable initialization script
     $(document).ready(function() {
         $('#myTable').DataTable({
             "ajax": {
                 "url": "/data",
-                "dataSrc": ""  // Tells DataTables to expect an array at the top level
+                "dataSrc": ""
             },
             "columns": [
                 { "data": "Email Address" },
@@ -21,17 +67,5 @@
         });
     });
     </script>
-</head>
-<body>
-    <table id="myTable" class="display">
-        <thead>
-            <tr>
-                <th>Email Address</th>
-                <th>department</th>
-                <!-- <th>Column 3</th> -->
-                <!-- Add more column headers as per your CSV file -->
-            </tr>
-        </thead>
-    </table>
 </body>
 </html>
