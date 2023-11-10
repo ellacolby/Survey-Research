@@ -10,7 +10,7 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <!-- Your custom JavaScript file for drawing the tree diagram -->
     <script src="/static/tree_diagram.js"></script>
-    <script src="{{ url_for('static', filename='ella_app.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
     <style>
         /* Simple reset for padding and margin */
         body, html {
@@ -41,8 +41,32 @@
                     <tr>
                         <th>Email Address</th>
                         <th>department</th>
-                        <!-- <th>Column 3</th> -->
-                        <!-- Add more column headers as per your CSV file -->
+                        <th>Department</th>
+                        <th>Uses Computation</th>
+                        <th>Top cluster user</th>
+                        <th>How long programming</th>
+                        <th>First programming language</th>
+                        <th>Attended special training in past year</th>
+                        <th>Last time learned new programming language</th>
+                        <th>What programming language(s) used</th>
+                        <th>Write software to automate mundane tasks</th>
+                        <th>Operating systems primarily used</th>
+                        <th>How long code you write stick around</th>
+                        <th>Aim for performance?</th>
+                        <th>Aim for portability and reusability?</th>
+                        <th>Software stack for your current research project</th>
+                        <th>Source code of software available to the public?</th>
+                        <th>What programming languages are the softwares written in</th>
+                        <th>Programs/libraries software stack uses for numerical computation</th>
+                        <th>How large is codebase of project</th>
+                        <th>How many people contribute to this project</th>
+                        <th>Research staff dedicated to programming?</th>
+                        <th>When was the majority of this project written?</th>
+                        <th>What machines typically run your software on</th>
+                        <th>Machines dedicated to your projects or shared with others</th>
+                        <th>Project require specific hardware</th>
+                        <th>Use any programming tools specialized for the specific hardware</th>
+                        <th>Use any job submission system</th>
                     </tr>
                 </thead>
             </table>
@@ -72,6 +96,7 @@
     // Your existing DataTable initialization script
     $(document).ready(function() {
         $('#myTable').DataTable({
+            "scrollX": true,  // Enable horizontal scrolling
             "ajax": {
                 "url": "/data",
                 "dataSrc": ""
@@ -79,7 +104,31 @@
             "columns": [
                 { "data": "Email Address" },
                 { "data": "department" },
-                // { "data": "column3" }
+                { "data": "uses computation"},
+                { "data": "top cluster user"},
+                { "data": "how long programming"},
+                { "data": "first programming language"},
+                { "data": "attended special training in past year"},
+                { "data": "last time learned new programming language"},
+                { "data": "what programming language(s) do you use"},
+                { "data": "write software to automate mundane tasks"},
+                { "data": "operating systems primarily used"},
+                { "data": "how long code you write stick around"},
+                { "data": "aim for performance"},
+                { "data": "aim for portability and reusability"},
+                { "data": "software stack for your current research project"},
+                { "data": "source code of software available to the public"},
+                { "data": "what programming languages are the softwares written in"},
+                { "data": "programs/libraries software stack uses for numerical computation"},
+                { "data": "how large is codebase of project"},
+                { "data": "how many people contribute to this project"},
+                { "data": "research staff dedicated to programming"},
+                { "data": "when was the majority of this project written?"},
+                { "data": "what machines typically run your software on"},
+                { "data": "machines dedicated to your projects or shared with others"},
+                { "data": "project require specific hardware"},
+                { "data": "use any programming tools specialized for the specific hardware"},
+                { "data": "use any job submission system"},
             ]
         });
     });
