@@ -41,10 +41,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Filter out any subpopulations that don't have a name or count
     const filteredSubpopulations = subpopulations.filter(sp => sp.name !== " ()");
 
-    const treeData = {
-      name: "Total Population",
-      children: filteredSubpopulations
-    };
+    // const treeData = {
+    //   name: "Total Population",
+    //   children: filteredSubpopulations
+    // };
+
+      // Calculate the total population count
+    let totalCount = 0;
+    const subpopulations = [];
+    for (let i = 1; i <= 3; i++) {
+      const name = document.getElementById('subpopulation' + i).value;
+      const count = parseInt(document.getElementById('count' + i).value, 10);
+      if(name && !isNaN(count)) {
+        subpopulations.push({ name: name + " (" + count + ")", count: count });
+        totalCount += count;
+      }
+    }
+
+  // Define the total population node with the calculated count
+  const treeData = {
+    name: "Total Population (" + totalCount + ")",
+    children: subpopulations
+  };
 
     // Clear the previous graph
     svg.selectAll('*').remove();
