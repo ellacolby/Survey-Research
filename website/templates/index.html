@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>DataTables with Flask</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='app.css') }}">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <!-- Include D3.js for the tree diagram -->
@@ -128,7 +129,10 @@
                 { "data": "project require specific hardware"},
                 { "data": "use any programming tools specialized for the specific hardware"},
                 { "data": "use any job submission system"},
-            ]
+            ],
+          "initComplete": function(settings, json) {
+              registering_click();
+            },
         });
     });
     </script>
