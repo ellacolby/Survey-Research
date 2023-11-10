@@ -26,17 +26,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // };
 
   function updateGraph() {
-    const subpopulations = [
-      {
-        name: document.getElementById('subpopulation1').value + " (" + document.getElementById('count1').value + ")",
-      },
-      {
-        name: document.getElementById('subpopulation2').value + " (" + document.getElementById('count2').value + ")",
-      },
-      {
-        name: document.getElementById('subpopulation3').value + " (" + document.getElementById('count3').value + ")",
-      },
-    ];
+    // const subpopulations = [
+    //   {
+    //     name: document.getElementById('subpopulation1').value + " (" + document.getElementById('count1').value + ")",
+    //   },
+    //   {
+    //     name: document.getElementById('subpopulation2').value + " (" + document.getElementById('count2').value + ")",
+    //   },
+    //   {
+    //     name: document.getElementById('subpopulation3').value + " (" + document.getElementById('count3').value + ")",
+    //   },
+    // ];
   
     // Filter out any subpopulations that don't have a name or count
     const filteredSubpopulations = subpopulations.filter(sp => sp.name !== " ()");
