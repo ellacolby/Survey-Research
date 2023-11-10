@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ];
   
     // Filter out any subpopulations that don't have a name or count
-    const filteredSubpopulations = subpopulations.filter(sp => sp.name !== " ()");
+    // const filteredSubpopulations = subpopulations.filter(sp => sp.name !== " ()");
 
     // const treeData = {
     //   name: "Total Population",
