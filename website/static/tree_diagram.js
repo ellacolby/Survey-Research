@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Transition nodes to their new size
   nodeEnter.transition()
       .duration(750)
-      .attr("r", 4.5);
+      .attr("r", 7);
 
   // Add a label to each node
   node.append("text")
