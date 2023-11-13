@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set the dimensions and margins of the diagram
   const margin = {top: 20, right: 200, bottom: 20, left: 200};
   const width = document.getElementById('tree-diagram').clientWidth - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  const height = 900 - margin.top - margin.bottom;
 
   // Append the svg object to the div with id "tree-diagram"
   const svg = d3.select("#tree-diagram").append("svg")
@@ -14,55 +14,25 @@ document.addEventListener('DOMContentLoaded', function() {
   // Create the tree layout
   const treemap = d3.tree().size([height, width]);
 
-  // Sample data for the tree diagram
-  // const treeData = {
-  //     name: "Total Population",
-  //     children: [
-  //         { name: "Computer Science (20)" },
-  //         { name: "Electrical Engineering (15)" },
-  //         { name: "Mechanical Engineering (25)" },
-  //         { name: "Biomedical Engineering (10)" }
-  //     ]
-  // };
-
-  function updateGraph() {
-    // const subpopulations = [
-    //   {
-    //     name: document.getElementById('subpopulation1').value + " (" + document.getElementById('count1').value + ")",
-    //   },
-    //   {
-    //     name: document.getElementById('subpopulation2').value + " (" + document.getElementById('count2').value + ")",
-    //   },
-    //   {
-    //     name: document.getElementById('subpopulation3').value + " (" + document.getElementById('count3').value + ")",
-    //   },
-    // ];
-  
-    // Filter out any subpopulations that don't have a name or count
-    // const filteredSubpopulations = subpopulations.filter(sp => sp.name !== " ()");
-
-    // const treeData = {
-    //   name: "Total Population",
-    //   children: filteredSubpopulations
-    // };
+  function drawTree(treeData) {
 
       // Calculate the total population count
-    let totalCount = 0;
-    const subpopulations = [];
-    for (let i = 1; i <= 3; i++) {
-      const name = document.getElementById('subpopulation' + i).value;
-      const count = parseInt(document.getElementById('count' + i).value, 10);
-      if(name && !isNaN(count)) {
-        subpopulations.push({ name: name + " (" + count + ")", count: count });
-        totalCount += count;
-      }
-    }
+    // let totalCount = 0;
+    // const subpopulations = [];
+    // for (let i = 1; i <= 3; i++) {
+    //   const name = document.getElementById('subpopulation' + i).value;
+    //   const count = parseInt(document.getElementById('count' + i).value, 10);
+    //   if(name && !isNaN(count)) {
+    //     subpopulations.push({ name: name + " (" + count + ")", count: count });
+    //     totalCount += count;
+    //   }
+    // }
 
-  // Define the total population node with the calculated count
-  const treeData = {
-    name: "Total Population (" + totalCount + ")",
-    children: subpopulations
-  };
+    // Define the total population node with the calculated count
+    // const treeData = {
+    //   name: "Total Population (" + totalCount + ")",
+    //   children: subpopulations
+    // };
 
     // Clear the previous graph
     svg.selectAll('*').remove();
@@ -70,10 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Assigns the structure and recalculates the layout
     const root = d3.hierarchy(treeData, function(d) { return d.children; });
     treemap(root);
-
-    // // Assigns parent, children, height, depth
-    // const root = d3.hierarchy(treeData, function(d) { return d.children; });
-    // treemap(root);
 
     // Add links between nodes
     svg.selectAll(".link")
@@ -153,9 +119,72 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Event listener for the draw button
-  document.getElementById('draw-button').addEventListener('click', updateGraph);
+  // Function to update the graph based on the column index
+  function updateGraphBasedOnColumn(columnIndex) {
+    // Fetch the data from DataTable
+    const table = $('#myTable').DataTable();
+    const columnData = table.column(columnIndex).data().toArray();
 
-  // Initially, call updateGraph to draw the base graph
-  updateGraph();
+    // Process the column data to count the occurrences, excluding empty strings
+    const counts = columnData.reduce((acc, val) => {
+      if (val.trim() !== '') {  // Check if the value is not an empty string
+        acc[val] = (acc[val] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    // Convert the counts to a tree structure
+    // const subpopulations = Object.keys(counts).map(key => {
+    //   return { name: key + " (" + counts[key] + ")" };
+    // });
+
+    // // Calculate the total population count by summing the values of the counts object
+    // const totalCount = Object.values(counts).reduce((acc, count) => acc + count, 0);
+    // const treeData = {
+    //   name: "Total Population (" + totalCount + ")",
+    //   children: subpopulations
+    // };
+
+    // Convert the counts to an array of objects, sort by count descending
+    const subpopulations = Object.entries(counts).map(([name, count]) => ({
+      name: name,
+      count: count
+    }));
+
+    // Sort subpopulations in descending order of count
+    subpopulations.sort((a, b) => b.count - a.count);
+
+    // Map the sorted subpopulations to the required format for the tree diagram
+    const subpopulationNodes = subpopulations.map(sp => ({
+      name: sp.name + " (" + sp.count + ")"
+    }));
+
+    // Calculate the total population count by summing the values of the counts object
+    const totalCount = subpopulations.reduce((acc, subpop) => acc + subpop.count, 0);
+
+    // Define the total population node with the calculated count
+    const treeData = {
+      name: "Total Population (" + totalCount + ")",
+      children: subpopulationNodes
+    };
+
+    drawTree(treeData);
+  }
+
+  // Event listener for the draw tree button
+  document.getElementById('draw-tree-button').addEventListener('click', function() {
+    // Get the column index from the input field
+    const columnIndexInput = document.getElementById('column-index');
+    const columnIndex = parseInt(columnIndexInput.value, 10) - 1; // Convert input to 0-based index
+
+    // Check if the entered index is a number
+    if (!isNaN(columnIndex) && columnIndex >= 0) {
+      updateGraphBasedOnColumn(columnIndex);
+    } else {
+      alert("Please enter a valid column index.");
+    }
+  });
+
+  // Draw the initial tree with just the Total Population node
+  drawTree({ name: "Total Population", children: [] });
 });
