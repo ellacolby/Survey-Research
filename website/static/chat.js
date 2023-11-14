@@ -1,6 +1,48 @@
-const chatButton = document.querySelector('.chat-input button');
-const chatInput = document.querySelector(".chat-input input[type='text']");
-const chatOutput = document.querySelector(".chat-output");
+var chatButton;
+var chatInput;
+var chatOutput;
+var columnContext = "No comlumn selected yet.";
+const chatbotRoute = "/chatbot-history";
+
+$(document).ready(function () {
+    chatButton = document.querySelector('.chat-input button');
+    chatInput = document.querySelector(".chat-input input[type='text']");
+    chatOutput = document.querySelector(".chat-output");
+
+    const welcomeMessage = `Ask me anything about the survey! `;
+    addMessage("Survey Bot", welcomeMessage);
+
+    chatButton.addEventListener('click', () => {
+        if (chatInput.value !== '') {
+            processInput();
+        }
+    });
+
+    // enter key
+    chatInput.addEventListener('keyup', (event) => {
+        if (event.keyCode === 13 && chatInput.value !== '') {
+            processInput();
+        }
+    });
+});
+
+
+function getTableContext(columnIndex) {
+    // Fetch the data from DataTable
+    const table = $('#myTable').DataTable();
+    const columnData = table.column(columnIndex).data().toArray();
+
+    // get the column header
+    const columnHeader = table.column(columnIndex).header().innerHTML;
+
+    // combine the header and data into a single string
+    columnContext = columnHeader + ": " + columnData.join(", ");
+
+    // also reset the chat history
+    chatOutput.innerHTML = "";
+    // add the context to the chat history
+    addMessage("Survey Bot", "I have your survey data:" + columnContext);
+}
 
 // Function to add a message to the chat output area
 function addMessage(sender, message) {
@@ -17,15 +59,12 @@ function addMessage(sender, message) {
     chatOutput.insertBefore(messageElement, chatOutput.firstChild);
 }
 
-    const welcomeMessage = `Ask me anything about the survey! `;
-    const chatbotRoute = "/chatbot-history";
-    addMessage("Survey Bot", welcomeMessage);
 
 function formatChatHistory(maxHistory=40) {
     var chatHistory = [];
     var chatElements = chatOutput.children;
 
-    var numMsg = Math.min(maxHistory, chatElements.length - 1);
+    var numMsg = Math.min(maxHistory, chatElements.length);
 
     for (var i = numMsg - 1; i >= 0; i--) {
         var element = chatElements[i];
@@ -76,16 +115,3 @@ function processInput() {
         chatOutput.insertBefore(hr, chatOutput.firstChild);
     });
 }
-
-chatButton.addEventListener('click', () => {
-    if (chatInput.value !== '') {
-        processInput();
-    }
-});
-
-// enter key
-chatInput.addEventListener('keyup', (event) => {
-    if (event.keyCode === 13 && chatInput.value !== '') {
-        processInput();
-    }
-});

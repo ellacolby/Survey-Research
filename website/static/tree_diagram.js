@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if the entered index is a number
     if (!isNaN(columnIndex) && columnIndex >= 0) {
       updateGraphBasedOnColumn(columnIndex);
+      getTableContext(columnIndex);
     } else {
       alert("Please enter a valid column index.");
     }

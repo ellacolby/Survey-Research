@@ -1,9 +1,7 @@
 from typing import Tuple
 import openai
+from openai import OpenAI
 import os
-
-# Set up OpenAI API credentials
-openai.api_key = os.environ["OPENAI_API_KEY"]
 
 MAX_CHAT_HISTORY = 20
 MAX_PUBLIC_TOKEN_COUNT = 2000
@@ -12,10 +10,14 @@ MAX_PUBLIC_TOKEN_COUNT = 2000
 with open("public_info.txt", "r") as f:
     public_info = f.read()
 
+client = OpenAI(
+    api_key=os.environ['OPENAI_API_KEY']
+)
 
 # Define a function to get a response from the chatbot
 def get_response(messages, model="gpt-3.5-turbo", temperature=0.5, max_tokens=100):
-    response = openai.ChatCompletion.create(
+    print(messages)
+    response = client.chat.completions.create(
         model=model,
         messages=messages,
         temperature=temperature,
@@ -24,7 +26,7 @@ def get_response(messages, model="gpt-3.5-turbo", temperature=0.5, max_tokens=10
         stop=None,
         timeout=15,
     )
-    message = response["choices"][0]["message"]["content"]  # type: ignore
+    message = response.choices[0].message.content  # type: ignore
     return message
 
 
