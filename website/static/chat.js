@@ -24,6 +24,15 @@ $(document).ready(function () {
             processInput();
         }
     });
+
+    $('#myTable').on('init.dt', function() {
+        // Attach a click listener to each column header in the DataTable
+        $("body").on("click", "td", function() {
+            var index = $(this).index();
+            // Call the function to update the graph based on the clicked column index
+            getTableContext(index);
+        });
+    });
 });
 
 
