@@ -171,21 +171,16 @@ document.addEventListener('DOMContentLoaded', function() {
     drawTree(treeData);
   }
 
-  // Event listener for the draw tree button
-  document.getElementById('draw-tree-button').addEventListener('click', function() {
-    // Get the column index from the input field
-    const columnIndexInput = document.getElementById('column-index');
-    const columnIndex = parseInt(columnIndexInput.value, 10) - 1; // Convert input to 0-based index
-
-    // Check if the entered index is a number
-    if (!isNaN(columnIndex) && columnIndex >= 0) {
-      updateGraphBasedOnColumn(columnIndex);
-      getTableContext(columnIndex);
-    } else {
-      alert("Please enter a valid column index.");
-    }
-  });
-
   // Draw the initial tree with just the Total Population node
   drawTree({ name: "Total Population", children: [] });
+
+  // Wait until the DataTable is fully initialized
+  $('#myTable').on('init.dt', function() {
+    // Attach a click listener to each column header in the DataTable
+    $("body").on("click", "td", function() {
+      var index = $(this).index();
+      // Call the function to update the graph based on the clicked column index
+      updateGraphBasedOnColumn(index);
+    });
+  });
 });

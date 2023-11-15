@@ -5,3 +5,19 @@
     width: 100%;
     overflow: auto;
 }
+
+/* Set a fixed height for all cells */
+#myTable td {
+    height: 50px; 
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+} 
+
+/* Ensure the cell content does not wrap */
+#myTable td {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 200px; /* Or whatever maximum width you want */
+}
