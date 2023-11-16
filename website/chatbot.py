@@ -15,7 +15,7 @@ client = OpenAI(
 )
 
 # Define a function to get a response from the chatbot
-def get_response(messages, model="gpt-3.5-turbo", temperature=0.5, max_tokens=100):
+def get_response(messages, model="gpt-4", temperature=0.5, max_tokens=1000):
     print(messages)
     response = client.chat.completions.create(
         model=model,
@@ -24,7 +24,7 @@ def get_response(messages, model="gpt-3.5-turbo", temperature=0.5, max_tokens=10
         max_tokens=max_tokens,
         n=1,
         stop=None,
-        timeout=15,
+        timeout=60,
     )
     message = response.choices[0].message.content  # type: ignore
     return message
