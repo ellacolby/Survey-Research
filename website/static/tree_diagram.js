@@ -15,25 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const treemap = d3.tree().size([height, width]);
 
   function drawTree(treeData) {
-
-      // Calculate the total population count
-    // let totalCount = 0;
-    // const subpopulations = [];
-    // for (let i = 1; i <= 3; i++) {
-    //   const name = document.getElementById('subpopulation' + i).value;
-    //   const count = parseInt(document.getElementById('count' + i).value, 10);
-    //   if(name && !isNaN(count)) {
-    //     subpopulations.push({ name: name + " (" + count + ")", count: count });
-    //     totalCount += count;
-    //   }
-    // }
-
-    // Define the total population node with the calculated count
-    // const treeData = {
-    //   name: "Total Population (" + totalCount + ")",
-    //   children: subpopulations
-    // };
-
+    console.log(treeData);
     // Clear the previous graph
     svg.selectAll('*').remove();
 
@@ -85,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .style("text-anchor", function(d) {
             return d.children ? "end" : "start";
         })
-        .text(function(d) { return d.data.name; })
+        .text(function(d) { return d.data ? d.data.name : ''; }) // Add the check here
         .style("fill-opacity", 0)
         .transition()
         .duration(750)
@@ -95,25 +77,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variable to keep track of the currently selected node
     let selectedNode = null;
 
+    // Store the original tree data
+    let originalTreeData = treeData;
+
+    // Start with a single root node
+    let data = {
+      name: 'Root',
+      children: []
+    };
+
     // Add a click event listener to each node
     node.on('click', function(event, d) {
-      // Check if it is a leaf node
+      console.log(treeData.children[d - 1].name);
       if (!d.children) {
-        // If there is a selected node and it's this node, deselect it
+        // If the node is selected
         if (selectedNode === this) {
           d3.select(this).select('circle')
             .style('fill', '#fff'); // Change color back to white
           selectedNode = null; // Deselect node
+          // Redraw the original tree
+          drawTree(originalTreeData);
         } else {
-          // If there is a selected node, change its color back to white
-          if (selectedNode) {
-            d3.select(selectedNode).select('circle')
-              .style('fill', '#fff');
-          }
+          selectedNode = this; // Update the currently selected node
+          // Store the original tree data
+          originalTreeData = treeData;
+
+          // Create a new tree with the clicked node as the root
+          const newTreeData = {
+            name: treeData.children[d - 1].name,
+            children: []
+          };
+
           // Select this node and change its color to red
           d3.select(this).select('circle')
             .style('fill', 'red');
-          selectedNode = this; // Update the currently selected node
+
+          // Redraw the tree with the new data
+          drawTree(newTreeData);
         }
       }
     });
@@ -132,18 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       return acc;
     }, {});
-
-    // Convert the counts to a tree structure
-    // const subpopulations = Object.keys(counts).map(key => {
-    //   return { name: key + " (" + counts[key] + ")" };
-    // });
-
-    // // Calculate the total population count by summing the values of the counts object
-    // const totalCount = Object.values(counts).reduce((acc, count) => acc + count, 0);
-    // const treeData = {
-    //   name: "Total Population (" + totalCount + ")",
-    //   children: subpopulations
-    // };
 
     // Convert the counts to an array of objects, sort by count descending
     const subpopulations = Object.entries(counts).map(([name, count]) => ({
