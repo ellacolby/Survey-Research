@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Create the tree layout
   const treemap = d3.tree().size([height, width]);
 
-  function drawTree(treeData) {
+  function drawTree(treeData, columnIndex) {
     console.log(treeData);
     // Clear the previous graph
     svg.selectAll('*').remove();
@@ -88,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add a click event listener to each node
     node.on('click', function(event, d) {
-      console.log(treeData.children[d - 1].name);
       if (!d.children) {
         // If the node is selected
         if (selectedNode === this) {
@@ -105,19 +104,26 @@ document.addEventListener('DOMContentLoaded', function() {
           // Create a new tree with the clicked node as the root
           const newTreeData = {
             name: treeData.children[d - 1].name,
+            nameText: treeData.children[d - 1].nameText,
             children: []
           };
 
-          // Select this node and change its color to red
-          d3.select(this).select('circle')
-            .style('fill', 'red');
+          updateTable(treeData.children[d - 1].nameText, columnIndex)
 
           // Redraw the tree with the new data
-          drawTree(newTreeData);
+          drawTree(newTreeData, columnIndex);
         }
       }
     });
   }
+
+  function updateTable(rootNodeName, columnIndex) {
+    // Fetch the data from DataTable
+    const table = $('#myTable').DataTable();
+
+    // Use the search API to filter rows based on the root node name
+    table.columns(columnIndex).search(rootNodeName).draw();
+}
 
   // Function to update the graph based on the column index
   function updateGraphBasedOnColumn(columnIndex) {
@@ -144,7 +150,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Map the sorted subpopulations to the required format for the tree diagram
     const subpopulationNodes = subpopulations.map(sp => ({
-      name: sp.name + " (" + sp.count + ")"
+      name: sp.name + " (" + sp.count + ")",
+      nameText: sp.name,
     }));
 
     // Calculate the total population count by summing the values of the counts object
@@ -153,10 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Define the total population node with the calculated count
     const treeData = {
       name: "Total Population (" + totalCount + ")",
+      nameText: "Total Population",
       children: subpopulationNodes
     };
 
-    drawTree(treeData);
+    drawTree(treeData, columnIndex);
   }
 
   // Draw the initial tree with just the Total Population node
