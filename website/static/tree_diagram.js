@@ -72,27 +72,28 @@ $(document).ready(function() {
     
         // Recursive function to process the TreeData
         function processNode(node, parentId = null) {
-        // Create a new node
-        let newNode = {
-            id: node.name,
-            label: `${node.name} (${node.count})`,
-            color:'#97C2FC', // Default color is 'lightblue
-            originalColor: '#97C2FC',
-        };
-    
-        // Add the node to the nodes array
-        nodes.push(newNode);
-    
-        // If this node has a parent, create an edge
-        if (parentId) {
-            edges.push({
-            from: parentId,
-            to: node.name,
-            });
-        }
-    
-        // Process the children
-        node.children.forEach((child) => processNode(child, node.name));
+            // Create a new node
+            let newNode = {
+                id: node.id, // Use the node's id instead of generating a random one
+                name: node.name,
+                label: `${node.name} (${node.count})`,
+                color:'#97C2FC', // Default color is 'lightblue
+                originalColor: '#97C2FC',
+            };
+        
+            // Add the node to the nodes array
+            nodes.push(newNode);
+        
+            // If this node has a parent, create an edge
+            if (parentId) {
+                edges.push({
+                from: parentId,
+                to: newNode.id, // Use the node's id instead of the name
+                });
+            }
+        
+            // Process the children
+            node.children.forEach((child) => processNode(child, newNode.id)); // Pass the node's id instead of the name
         }
     
         // Start processing with the root node
@@ -163,34 +164,64 @@ $(document).ready(function() {
       
         // Iterate over each value in the column
         columnData.forEach(function(cellValue) {
-          // If the cell value is not empty
-          if (cellValue) {
-            // If this value is not already in the counts object, add it
-            if (!counts[cellValue]) {
-              counts[cellValue] = {
-                name: cellValue,
-                count: 0,
-                children: []
-              };
+            // If the cell value is not empty
+            if (cellValue) {
+                // If this value is not already in the counts object, add it
+                if (!counts[cellValue]) {
+                    counts[cellValue] = {
+                        id: Math.random(), // Add a unique identifier
+                        name: cellValue,
+                        count: 0,
+                        children: [],
+                        parent: root // Add a parent field
+                    };
+                }
+
+                // Increment the count
+                counts[cellValue].count++;
             }
-      
-            // Increment the count
-            counts[cellValue].count++;
-          }
         });
       
         // Convert the counts object to an array of TreeData objects
         let treeDataArray = Object.values(counts);
       
-        // Clear the children of the root node
-        root.children = [];
-      
-        // Add the new TreeData objects as children of the root
-        root.children = root.children.concat(treeDataArray);
-      
+        console.log("root: ");
+        console.log(root.id)
+        // Find the node in TreeData that corresponds to root
+        let rootNode = findNode(TreeData, root.id);
+        console.log(rootNode)
+
+        if (rootNode) {
+            // Clear the children of the root node
+            rootNode.children = [];
+            rootNode.name = headersArray[colIndex];
+    
+            // Add the new TreeData objects as children of the root
+            rootNode.children = rootNode.children.concat(treeDataArray);
+        }
+
+        console.log(TreeData);
+    
         // Draw the tree
-        drawTree(root);
+        drawTree(TreeData);
       }
+
+      // Recursive function to find a node in the tree
+        // Recursive function to find a node in the tree
+        function findNode(node, id) { // Use the unique identifier to find the node
+            if (node.id === id) {
+                return node;
+            }
+
+            for (let i = 0; i < node.children.length; i++) {
+                let result = findNode(node.children[i], id);
+                if (result) {
+                    return result;
+                }
+            }
+
+            return null;
+        }
 
       function nodeClicked(clickedNode) {
         console.log(headersArray);
@@ -223,16 +254,18 @@ $(document).ready(function() {
             if (updatedNode.color === 'red') {
                 root = updatedNode;
 
+                console.log(root.name);
+
                 if (globalVector.length > 0) {
                     let lastMap = globalVector[globalVector.length - 1];
                     for (let key in lastMap) {
-                        lastMap[key] = clickedNode.id;
+                        lastMap[key] = clickedNode.name;
                     }
                 }
 
                 console.log(globalVector);
 
-                filterTableArray(tableArray, globalVector, headersArray);
+                tableArray = filterTableArray(tableArray, globalVector, headersArray);
              
                 // Get the DataTable
                 let table = $('#myTable').DataTable(); 
@@ -268,13 +301,16 @@ $(document).ready(function() {
     
             // Update the previously clicked node
             previousClickedNode = updatedNode;
+            console.log(root);
         }
     }
 
     let TreeData = {
+        id: Math.random(), // Add a unique identifier
         name: "Total Population",
         count: 172,
-        children: []
+        children: [],
+        parent: null // Add a parent field
     };
 
     let root = TreeData
