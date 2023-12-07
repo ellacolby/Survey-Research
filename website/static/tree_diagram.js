@@ -273,7 +273,7 @@ $(document).ready(function() {
 
     let TreeData = {
         name: "Total Population",
-        count: 1,
+        count: 172,
         children: []
     };
 
