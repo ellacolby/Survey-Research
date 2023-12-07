@@ -6,8 +6,12 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='app.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='chat.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <!-- Include D3.js for the tree diagram -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <!-- Your custom JavaScript file for drawing the tree diagram -->
@@ -78,6 +82,7 @@
         </div>
         <div class="half">
             <div id="tree-diagram">
+                <div id="mynetwork"></div>
                 <div class="column-body" data-column-header="Column Header">Column Body</div>
             </div>
             <div class="container">

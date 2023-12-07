@@ -21,3 +21,9 @@
     overflow: hidden;
     max-width: 200px; /* Or whatever maximum width you want */
 }
+
+#mynetwork {
+    width: 100%;
+    height: 80vh; /* Adjust this to change the vertical size */
+    border: 1px solid lightgray;
+  }
