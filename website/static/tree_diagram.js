@@ -79,6 +79,9 @@ $(document).ready(function() {
                 label: `${node.name} (${node.count})`,
                 color:'#97C2FC', // Default color is 'lightblue
                 originalColor: '#97C2FC',
+                physics: {
+                    gravitationalConstant: -50, // Increase this value to pull the node downwards
+                },
             };
         
             // Add the node to the nodes array
@@ -194,7 +197,6 @@ $(document).ready(function() {
         if (rootNode) {
             // Clear the children of the root node
             rootNode.children = [];
-            rootNode.name = headersArray[colIndex];
     
             // Add the new TreeData objects as children of the root
             rootNode.children = rootNode.children.concat(treeDataArray);
