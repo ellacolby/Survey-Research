@@ -4,8 +4,66 @@ let network; // Define network here
 let previousClickedNode = null; // Add this line outside of your function
 
 let tableData = [];
+let tableArray = [];
+let headersArray = [];
 
 $(document).ready(function() {
+    function initialize() {
+        // Get the DataTable
+        let table = $('#myTable').DataTable();
+
+        // Get the number of rows
+        let rowCount = table.rows().count();
+
+        // Get the number of columns
+        let colCount = table.columns().count();
+
+        // Get the headers
+        table.columns().header().each(function(header) {
+            // Get the text of the header and add it to the headers array
+            headersArray.push($(header).text());
+        });
+
+        // Iterate over each row
+        for (let i = 0; i < rowCount; i++) {
+            // Initialize an empty array for this row
+            let rowArray = [];
+
+            // Iterate over each column
+            for (let j = 0; j < colCount; j++) {
+                // Get the cell value
+                let cellValue = table.cell(i, j).data();
+
+                // Add the cell value to the row array
+                rowArray.push(cellValue);
+            }
+
+            // Add the row array to the table array
+            tableArray.push(rowArray);
+        }
+
+        // Now, tableArray is a 2D array of your DataTable
+        console.log(tableArray);
+        console.log(headersArray);
+    }
+    // Define the custom filtering function
+    function filterTableArray(tableArray, globalVector, headersArray) {
+        return tableArray.filter(function(row) {
+            for (let map of globalVector) {
+                let column = Object.keys(map)[0];
+                let value = map[column];
+                let columnIndex = headersArray.indexOf(column);
+                // debug
+                console.log(columnIndex);
+                
+                if (row[columnIndex] !== value) {
+                    return false; // Exclude this row
+                }
+            }
+            return true; // Include this row
+        });
+    }
+
     function drawTree(TreeData) {
         // Create an array to hold the nodes
         let nodes = [];
@@ -75,11 +133,13 @@ $(document).ready(function() {
     }
 
     function colClicked(colIndex) {
-        // Create a new map
+        // Define a new map
         let newMap = {};
+        // Get the DataTable
+        let table = $('#myTable').DataTable(); 
 
         // Get the column header
-        let columnHeader = $('#myTable').DataTable().column(colIndex).header().innerText;
+        let columnHeader = table.column(colIndex).header().innerHTML;
 
         // Add the column header and an ampersand to the map
         newMap[columnHeader] = '*';
@@ -90,11 +150,17 @@ $(document).ready(function() {
         // Create an object to hold the counts
         let counts = {};
       
-        // Get the DataTable
-        let table = $('#myTable').DataTable();
-      
-        // Get the data for the clicked column
-        let columnData = table.column(colIndex).data().toArray();
+        // Initialize an empty array for the column data
+        let columnData = [];
+
+        // Iterate over each row
+        for (let i = 0; i < tableArray.length; i++) {
+            // Get the cell value
+            let cellValue = tableArray[i][colIndex];
+
+            // Add the cell value to the column data array
+            columnData.push(cellValue);
+        }
       
         // Iterate over each value in the column
         columnData.forEach(function(cellValue) {
@@ -128,6 +194,7 @@ $(document).ready(function() {
       }
 
       function nodeClicked(clickedNode) {
+        console.log(headersArray);
         // Check if a node was clicked
         if (clickedNode) {
             // If there was a previously clicked node, reset its color
@@ -165,8 +232,13 @@ $(document).ready(function() {
 
                 console.log(globalVector);
 
+                filterTableArray(tableArray, globalVector, headersArray);
+             
                 // Get the DataTable
-                let headers = $('#myTable').DataTable().columns().header().toArray().map(header => $(header).text());
+                let table = $('#myTable').DataTable(); 
+
+                // Get the DataTable
+                let headers = table.columns().header().toArray().map(header => $(header).text());
                 console.log(headers);
 
                 // Clear the previous search functions
@@ -188,10 +260,6 @@ $(document).ready(function() {
                     }
                     return true; // Include this row
                 });
-
-                // Get the DataTable
-                let table = $('#myTable').DataTable();
-
                 // Redraw the table
                 table.draw();
             } else {
@@ -213,6 +281,9 @@ $(document).ready(function() {
       
   // Call the function with your TreeData
   drawTree(TreeData);
+  $('#initializeButton').click(function() {
+    initialize();
+});
 
   $("#myTable th").click(function() {
     colClicked($(this).index());
