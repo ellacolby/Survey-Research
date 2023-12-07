@@ -3,7 +3,6 @@ let globalVector = [];
 let network; // Define network here
 let previousClickedNode = null; // Add this line outside of your function
 
-let tableData = [];
 let tableArray = [];
 let headersArray = [];
 
@@ -223,6 +222,7 @@ $(document).ready(function() {
             // Assign the clicked node to the global variable root only if its color is red
             if (updatedNode.color === 'red') {
                 root = updatedNode;
+
                 if (globalVector.length > 0) {
                     let lastMap = globalVector[globalVector.length - 1];
                     for (let key in lastMap) {
