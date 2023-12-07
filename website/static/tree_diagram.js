@@ -1,4 +1,11 @@
-document.addEventListener('DOMContentLoaded', function() {
+// Define a global array to hold the maps
+let globalVector = [];
+let network; // Define network here
+let previousClickedNode = null; // Add this line outside of your function
+
+let tableData = [];
+
+$(document).ready(function() {
     function drawTree(TreeData) {
         // Create an array to hold the nodes
         let nodes = [];
@@ -12,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let newNode = {
             id: node.name,
             label: `${node.name} (${node.count})`,
+            color:'#97C2FC', // Default color is 'lightblue
+            originalColor: '#97C2FC',
         };
     
         // Add the node to the nodes array
@@ -38,11 +47,46 @@ document.addEventListener('DOMContentLoaded', function() {
         nodes: new vis.DataSet(nodes),
         edges: new vis.DataSet(edges),
         };
-        let options = {};
-        let network = new vis.Network(container, data, options);
+        let options = {
+            layout: {
+              hierarchical: {
+                direction: "UD", // From up to down
+                sortMethod: "directed" // Directed sorting method
+              }
+            }
+          };
+          
+        network = new vis.Network(container, data, options); // Assign to the global network variable
+
+        // Add a click handler to the network
+        network.on("click", function(params) {
+            // Check if a node was clicked
+            if (params.nodes.length > 0) {
+                // Get the clicked node id
+                let clickedNodeId = params.nodes[0];
+
+                // Get the clicked node
+                let clickedNode = network.body.data.nodes.get(clickedNodeId);
+
+                // Call the nodeClicked function with the clicked node
+                nodeClicked(clickedNode);
+            }
+        });
     }
 
     function colClicked(colIndex) {
+        // Create a new map
+        let newMap = {};
+
+        // Get the column header
+        let columnHeader = $('#myTable').DataTable().column(colIndex).header().innerText;
+
+        // Add the column header and an ampersand to the map
+        newMap[columnHeader] = '*';
+
+        // Add the map to the global array
+        globalVector.push(newMap);
+
         // Create an object to hold the counts
         let counts = {};
       
@@ -83,6 +127,82 @@ document.addEventListener('DOMContentLoaded', function() {
         drawTree(root);
       }
 
+      function nodeClicked(clickedNode) {
+        // Check if a node was clicked
+        if (clickedNode) {
+            // If there was a previously clicked node, reset its color
+            if (previousClickedNode) {
+                network.body.data.nodes.update([{ id: previousClickedNode.id, color: previousClickedNode.originalColor }]);
+            }
+    
+            // Get the clicked node id
+            let clickedNodeId = clickedNode.id;
+    
+            // Get the current color of the clicked node
+            let currentColor = clickedNode.color;
+    
+            // Get the original color of the clicked node
+            let originalColor = clickedNode.originalColor;
+    
+            // Determine the new color
+            let newColor = currentColor === 'red' ? originalColor : 'red';
+    
+            // Update the color of the clicked node
+            network.body.data.nodes.update([{ id: clickedNodeId, color: newColor }]);
+    
+            // Get the updated node
+            let updatedNode = network.body.data.nodes.get(clickedNodeId);
+    
+            // Assign the clicked node to the global variable root only if its color is red
+            if (updatedNode.color === 'red') {
+                root = updatedNode;
+                if (globalVector.length > 0) {
+                    let lastMap = globalVector[globalVector.length - 1];
+                    for (let key in lastMap) {
+                        lastMap[key] = clickedNode.id;
+                    }
+                }
+
+                console.log(globalVector);
+
+                // Get the DataTable
+                let headers = $('#myTable').DataTable().columns().header().toArray().map(header => $(header).text());
+                console.log(headers);
+
+                // Clear the previous search functions
+                $.fn.dataTable.ext.search.pop();
+
+                // Define the custom filtering function
+                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                    for (let map of globalVector) {
+                        let column = Object.keys(map)[0];
+                        let value = map[column];
+                        // Get the column index by its name from the headers array
+                        let columnIndex = headers.indexOf(column);
+                        // debug
+                        console.log(columnIndex);
+                        
+                        if (data[columnIndex] !== value) {
+                            return false; // Exclude this row
+                        }
+                    }
+                    return true; // Include this row
+                });
+
+                // Get the DataTable
+                let table = $('#myTable').DataTable();
+
+                // Redraw the table
+                table.draw();
+            } else {
+                root = TreeData; // Default to the root of the tree
+            }
+    
+            // Update the previously clicked node
+            previousClickedNode = updatedNode;
+        }
+    }
+
     let TreeData = {
         name: "Total Population",
         count: 1,
@@ -93,10 +213,6 @@ document.addEventListener('DOMContentLoaded', function() {
       
   // Call the function with your TreeData
   drawTree(TreeData);
-
-  $(document).ready(function() {
-    $('#myTable').DataTable();
-  });
 
   $("#myTable th").click(function() {
     colClicked($(this).index());
