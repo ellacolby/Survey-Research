@@ -6,6 +6,8 @@ let previousClickedNode = null; // Add this line outside of your function
 let tableArray = [];
 let headersArray = [];
 
+let levelCount = 0
+
 $(document).ready(function() {
     function initialize() {
         // Get the DataTable
@@ -40,10 +42,6 @@ $(document).ready(function() {
             // Add the row array to the table array
             tableArray.push(rowArray);
         }
-
-        // Now, tableArray is a 2D array of your DataTable
-        console.log(tableArray);
-        console.log(headersArray);
     }
     // Define the custom filtering function
     function filterTableArray(tableArray, globalVector, headersArray) {
@@ -52,8 +50,6 @@ $(document).ready(function() {
                 let column = Object.keys(map)[0];
                 let value = map[column];
                 let columnIndex = headersArray.indexOf(column);
-                // debug
-                console.log(columnIndex);
                 
                 if (row[columnIndex] !== value) {
                     return false; // Exclude this row
@@ -71,36 +67,37 @@ $(document).ready(function() {
         let edges = [];
     
         // Recursive function to process the TreeData
-        function processNode(node, parentId = null) {
-            // Create a new node
-            let newNode = {
-                id: node.id, // Use the node's id instead of generating a random one
-                name: node.name,
-                label: `${node.name} (${node.count})`,
-                color:'#97C2FC', // Default color is 'lightblue
-                originalColor: '#97C2FC',
-                physics: {
-                    gravitationalConstant: -50, // Increase this value to pull the node downwards
-                },
-            };
-        
-            // Add the node to the nodes array
-            nodes.push(newNode);
-        
-            // If this node has a parent, create an edge
-            if (parentId) {
-                edges.push({
+    function processNode(node, parentId = null, level = 0) {
+        // Create a new node
+        let newNode = {
+            id: node.id,
+            name: node.name,
+            label: `${node.name} (${node.count})`,
+            color:'#97C2FC',
+            originalColor: '#97C2FC',
+            level: level, // Set the level of the node
+            physics: {
+                gravitationalConstant: -50,
+            },
+        };
+
+        // Add the node to the nodes array
+        nodes.push(newNode);
+
+        // If this node has a parent, create an edge
+        if (parentId) {
+            edges.push({
                 from: parentId,
-                to: newNode.id, // Use the node's id instead of the name
-                });
-            }
-        
-            // Process the children
-            node.children.forEach((child) => processNode(child, newNode.id)); // Pass the node's id instead of the name
+                to: newNode.id,
+            });
         }
-    
+
+        // Process the children
+        node.children.forEach((child) => processNode(child, newNode.id, level + 1)); // Increment the level for children
+    }
+
         // Start processing with the root node
-        processNode(TreeData);
+        processNode(TreeData, null, 0);
     
         // Create a network
         let container = document.getElementById("mynetwork");
@@ -110,10 +107,16 @@ $(document).ready(function() {
         };
         let options = {
             layout: {
-              hierarchical: {
-                direction: "UD", // From up to down
-                sortMethod: "directed" // Directed sorting method
-              }
+                hierarchical: {
+                    direction: "UD",
+                    sortMethod: "directed"
+                }
+            },
+            physics: {
+                hierarchicalRepulsion: {
+                    springLength: 200, // Increase this value to make the nodes more resistant to movement
+                    springConstant: 0.01, // Increase this value to make the nodes more resistant to movement
+                }
             }
           };
           
@@ -136,10 +139,44 @@ $(document).ready(function() {
     }
 
     function colClicked(colIndex) {
+            // Get the last map without '*' as a value
+            let lastMap;
+            for (let i = globalVector.length - 1; i >= 0; i--) {
+                let map = globalVector[i];
+                let value = Object.values(map)[0];
+                if (value !== '*') {
+                    lastMap = map;
+                    break;
+                }
+            }
+            // Get the DataTable
+            let table = $('#myTable').DataTable(); 
+            
+            // Get the DataTable
+            let headers = table.columns().header().toArray().map(header => $(header).text());
+            
+            // Clear the previous search functions
+            $.fn.dataTable.ext.search.pop();
+            
+            // Define the custom filtering function
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                if (lastMap) {
+                    let column = Object.keys(lastMap)[0];
+                    let value = lastMap[column];
+                    // Get the column index by its name from the headers array
+                    let columnIndex = headers.indexOf(column);                
+                    if (data[columnIndex] !== value) {
+                        return false; // Exclude this row
+                    }
+                }
+                return true; // Include this row
+            });
+            
+            // Redraw the table
+            table.draw();
+
         // Define a new map
         let newMap = {};
-        // Get the DataTable
-        let table = $('#myTable').DataTable(); 
 
         // Get the column header
         let columnHeader = table.column(colIndex).header().innerHTML;
@@ -188,11 +225,8 @@ $(document).ready(function() {
         // Convert the counts object to an array of TreeData objects
         let treeDataArray = Object.values(counts);
       
-        console.log("root: ");
-        console.log(root.id)
         // Find the node in TreeData that corresponds to root
         let rootNode = findNode(TreeData, root.id);
-        console.log(rootNode)
 
         if (rootNode) {
             // Clear the children of the root node
@@ -201,8 +235,6 @@ $(document).ready(function() {
             // Add the new TreeData objects as children of the root
             rootNode.children = rootNode.children.concat(treeDataArray);
         }
-
-        console.log(TreeData);
     
         // Draw the tree
         drawTree(TreeData);
@@ -226,7 +258,6 @@ $(document).ready(function() {
         }
 
       function nodeClicked(clickedNode) {
-        console.log(headersArray);
         // Check if a node was clicked
         if (clickedNode) {
             // If there was a previously clicked node, reset its color
@@ -256,8 +287,6 @@ $(document).ready(function() {
             if (updatedNode.color === 'red') {
                 root = updatedNode;
 
-                console.log(root.name);
-
                 if (globalVector.length > 0) {
                     let lastMap = globalVector[globalVector.length - 1];
                     for (let key in lastMap) {
@@ -265,46 +294,43 @@ $(document).ready(function() {
                     }
                 }
 
-                console.log(globalVector);
-
                 tableArray = filterTableArray(tableArray, globalVector, headersArray);
              
-                // Get the DataTable
-                let table = $('#myTable').DataTable(); 
-
-                // Get the DataTable
-                let headers = table.columns().header().toArray().map(header => $(header).text());
-                console.log(headers);
-
-                // Clear the previous search functions
-                $.fn.dataTable.ext.search.pop();
-
-                // Define the custom filtering function
-                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                    for (let map of globalVector) {
-                        let column = Object.keys(map)[0];
-                        let value = map[column];
-                        // Get the column index by its name from the headers array
-                        let columnIndex = headers.indexOf(column);
-                        // debug
-                        console.log(columnIndex);
-                        
-                        if (data[columnIndex] !== value) {
-                            return false; // Exclude this row
-                        }
-                    }
-                    return true; // Include this row
-                });
-                // Redraw the table
-                table.draw();
+                drawTable();
             } else {
                 root = TreeData; // Default to the root of the tree
             }
     
             // Update the previously clicked node
             previousClickedNode = updatedNode;
-            console.log(root);
         }
+    }
+
+    function drawTable(){
+        // Get the DataTable
+        let table = $('#myTable').DataTable(); 
+
+        // Get the DataTable
+        let headers = table.columns().header().toArray().map(header => $(header).text());
+
+        // Clear the previous search functions
+        $.fn.dataTable.ext.search.pop();
+
+        // Define the custom filtering function
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            for (let map of globalVector) {
+                let column = Object.keys(map)[0];
+                let value = map[column];
+                // Get the column index by its name from the headers array
+                let columnIndex = headers.indexOf(column);                
+                if (data[columnIndex] !== value) {
+                    return false; // Exclude this row
+                }
+            }
+            return true; // Include this row
+        });
+        // Redraw the table
+        table.draw();
     }
 
     let TreeData = {
