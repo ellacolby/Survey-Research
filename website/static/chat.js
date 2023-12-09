@@ -39,7 +39,8 @@ $(document).ready(function () {
 function getTableContext(columnIndex) {
     // Fetch the data from DataTable
     const table = $('#myTable').DataTable();
-    const columnData = table.column(columnIndex).data().toArray();
+    // get the column name with the index
+    const columnData = table.column(columnIndex, { search: 'applied' }).data().toArray();
 
     // get the column header
     const columnHeader = table.column(columnIndex).header().innerHTML;
