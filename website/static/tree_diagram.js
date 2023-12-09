@@ -161,16 +161,21 @@ $(document).ready(function() {
             // Define the custom filtering function
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                 if (lastMap) {
-                    let column = Object.keys(lastMap)[0];
-                    let value = lastMap[column];
-                    // Get the column index by its name from the headers array
-                    let columnIndex = headers.indexOf(column);                
-                    if (data[columnIndex] !== value) {
-                        return false; // Exclude this row
+                    for (let i = 0; i < globalVector.length - 1; i++) {
+                        let map = globalVector[i];
+                        let column = Object.keys(map)[0];
+                        let value = map[column];
+                        // Get the column index by its name from the headers array
+                        let columnIndex = headers.indexOf(column);                
+                        if (data[columnIndex] !== value) {
+                            return false; // Exclude this row
+                        }
                     }
                 }
                 return true; // Include this row
             });
+
+            console.log(lastMap)
             
             // Redraw the table
             table.draw();
